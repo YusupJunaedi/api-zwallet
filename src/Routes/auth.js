@@ -10,5 +10,7 @@ const authRouter = express.Router();
 authRouter.post("/register", authController.register);
 authRouter.post("/login", authController.login);
 authRouter.patch("/setpin", authController.updatePin);
+authRouter.post("/checkPassword", authController.checkPassword);
+authRouter.patch("/changePassword", authController.changePassword);
 
 module.exports = authRouter;

@@ -87,6 +87,7 @@ const authModel = {
                 pin,
                 no_hp,
                 amount,
+                email,
               });
             }
             if (!result) {
@@ -96,6 +97,65 @@ const authModel = {
               reject(err);
             }
           });
+        }
+      });
+    });
+  },
+  checkPassword: (body) => {
+    return new Promise((resolve, reject) => {
+      const queryString = "SELECT * FROM users WHERE email = ?";
+      db.query(queryString, [body.email], (err, data) => {
+        if (err) {
+          reject(err);
+        }
+        if (!data.length) {
+          reject("User Not Found");
+        } else {
+          bcrypt.compare(body.password, data[0].password, (err, result) => {
+            if (result) {
+              const passwordUser = true;
+              resolve({
+                passwordUser: passwordUser,
+              });
+            }
+            if (!result) {
+              reject({ passwordUser: false });
+            }
+            if (err) {
+              reject(err);
+            }
+          });
+        }
+      });
+    });
+  },
+  changePassword: (body) => {
+    return new Promise((resolve, reject) => {
+      const qs = "SELECT email FROM users WHERE email = ?";
+      db.query(qs, [body.email], (err, data) => {
+        if (data.length) {
+          bcrypt.genSalt(10, (err, salt) => {
+            if (err) {
+              reject(err);
+            }
+            const { password, email } = body;
+            bcrypt.hash(password, salt, (err, hashedPassword) => {
+              if (err) {
+                reject(err);
+              }
+              const queryString =
+                "UPDATE users SET password= ? WHERE email = ?";
+              db.query(queryString, [hashedPassword, email], (err, data) => {
+                if (!err) {
+                  resolve({ msg: "change password success" });
+                } else {
+                  reject(err);
+                }
+              });
+            });
+          });
+        } else {
+          reject(err);
         }
       });
     });

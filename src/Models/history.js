@@ -3,26 +3,42 @@ const db = require("../Configs/dbMySql");
 const historyModel = {
   addDataHistory: (body) => {
     const { userIdTransfer, userIdSubscription, amount, balanceLeft } = body;
-    const data1 = [userIdTransfer, userIdSubscription, "Transfer", amount];
-    const data2 = [userIdSubscription, userIdTransfer, "Subscription", amount];
+    const data1 = [userIdTransfer, userIdSubscription, "Subscription", amount];
+    const data2 = [userIdSubscription, userIdTransfer, "Transfer", amount];
     return new Promise((resolve, reject) => {
-      const queryString = `START transaction; INSERT INTO history(user_id, id_user_history, transaction, Amount) VALUES ?; INSERT INTO history(user_id, id_user_history, transaction, Amount) VALUES ?; UPDATE users SET amount= ? WHERE id_user= ?; COMMIT;`;
+      const Qs = `SELECT amount FROM users WHERE id_user = ?`;
 
-      db.query(
-        queryString,
-        [[data1], [data2], balanceLeft, userIdTransfer],
-        (err, data) => {
-          const res = {
-            balanceLeft: balanceLeft,
-            msg: "add history success",
-          };
-          if (!err) {
-            resolve(res);
-          } else {
-            reject(err);
-          }
+      const queryString = `START transaction; INSERT INTO history(user_id, id_user_history, transaction, Amount) VALUES ?; INSERT INTO history(user_id, id_user_history, transaction, Amount) VALUES ?; COMMIT;`;
+
+      db.query(Qs, [userIdSubscription], (err, data) => {
+        if (!err) {
+          const amountUserSubscription = data[0].amount + amount;
+          db.query(
+            queryString,
+            [
+              [data1],
+              [data2],
+              balanceLeft,
+              userIdTransfer,
+              amountUserSubscription,
+              userIdSubscription,
+            ],
+            (err, data) => {
+              const res = {
+                balanceLeft: balanceLeft,
+                msg: "add history success",
+              };
+              if (!err) {
+                resolve(res);
+              } else {
+                reject(err);
+              }
+            }
+          );
+        } else {
+          reject(err);
         }
-      );
+      });
     });
   },
   getDataHistory: (id) => {

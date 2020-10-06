@@ -12,6 +12,16 @@ const authController = {
         formResponse.error(res, err);
       });
   },
+  updateUserImg: (req, res) => {
+    userModel
+      .updateUserImg(req.body)
+      .then((data) => {
+        formResponse.succes(res, data);
+      })
+      .catch((err) => {
+        formResponse.error(res, err);
+      });
+  },
 };
 
 module.exports = authController;

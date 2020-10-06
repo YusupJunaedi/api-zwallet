@@ -22,6 +22,26 @@ const authController = {
         formResponse.error(res, err);
       });
   },
+  checkPassword: (req, res) => {
+    authModel
+      .checkPassword(req.body)
+      .then((data) => {
+        formResponse.succes(res, data);
+      })
+      .catch((err) => {
+        formResponse.error(res, err);
+      });
+  },
+  changePassword: (req, res) => {
+    authModel
+      .changePassword(req.body)
+      .then((data) => {
+        formResponse.succes(res, data);
+      })
+      .catch((err) => {
+        formResponse.error(res, err);
+      });
+  },
   updatePin: (req, res) => {
     authModel
       .updatePin(req.body)

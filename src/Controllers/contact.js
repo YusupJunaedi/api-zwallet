@@ -12,6 +12,26 @@ const contactController = {
         formResponse.error(res, err);
       });
   },
+  getQuickContact: (req, res) => {
+    contactModel
+      .getQuickContact(req.query)
+      .then((data) => {
+        formResponse.succes(res, data);
+      })
+      .catch((err) => {
+        formResponse.error(res, err);
+      });
+  },
+  searchDataContact: (req, res) => {
+    contactModel
+      .searchDataContact(req.query)
+      .then((data) => {
+        formResponse.succes(res, data);
+      })
+      .catch((err) => {
+        formResponse.error(res, err);
+      });
+  },
 };
 
 module.exports = contactController;

@@ -14,6 +14,19 @@ const authModel = {
       });
     });
   },
+  updateUserImg: (body) => {
+    const { id_user, image } = body;
+    const queryString = "UPDATE users SET image= ? WHERE id_user = ?";
+    return new Promise((resolve, reject) => {
+      db.query(queryString, [image, id_user], (err, data) => {
+        if (!err) {
+          resolve(image);
+        } else {
+          reject(err);
+        }
+      });
+    });
+  },
 };
 
 module.exports = authModel;
