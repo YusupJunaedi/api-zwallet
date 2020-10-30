@@ -166,7 +166,49 @@ const authModel = {
       const queryString = "UPDATE users SET pin=? WHERE id_user =?";
       db.query(queryString, [pin, id_user], (err, data) => {
         if (!err) {
-          resolve(data);
+          resolve({ pin: pin });
+        } else {
+          reject(err);
+        }
+      });
+    });
+  },
+  sendEmail: (body) => {
+    return new Promise((resolve, reject) => {
+      const otp = Math.floor(1000 + Math.random() * 900000);
+      const queryString = "SELECT email, code FROM code_otp WHERE email = ?";
+      db.query(queryString, [body.email], (err, data) => {
+        if (err) {
+          reject(err);
+        }
+        if (data.length) {
+          const Qs = `UPDATE code_otp SET code = ${otp} Where email = ? `;
+          db.query(Qs, [body.email], (err, data) => {
+            if (!err) {
+              resolve({ sendOTP: "success", code: otp });
+            } else {
+              reject(err);
+            }
+          });
+        } else {
+          const Qstr = `INSERT INTO code_otp SET email = ?, code= ?`;
+          db.query(Qstr, [body.email, otp], (err, data) => {
+            if (!err) {
+              resolve({ sendOTP: "success", code: otp });
+            } else {
+              reject(err);
+            }
+          });
+        }
+      });
+    });
+  },
+  checkOTP: (body) => {
+    return new Promise((resolve, reject) => {
+      const queryString = `SELECT code FROM code_otp WHERE email = ?`;
+      db.query(queryString, [body.email], (err, data) => {
+        if (!err) {
+          resolve({ code: data[0].code });
         } else {
           reject(err);
         }
