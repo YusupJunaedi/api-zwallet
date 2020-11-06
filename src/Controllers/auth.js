@@ -1,3 +1,4 @@
+require("dotenv").config();
 const formResponse = require("../Helpers/forms/formResponse");
 const authModel = require("../Models/auth");
 const nodemailer = require("nodemailer");
@@ -70,13 +71,13 @@ const authController = {
         var transporter = nodemailer.createTransport({
           service: "gmail",
           auth: {
-            user: "nendyyusup79@gmail.com",
-            pass: "harus di isisama pasaaword kalian",
+            user: process.env.EMAIL,
+            pass: process.env.PASSWORD_EMAIL,
           },
         });
 
         var mailOptions = {
-          from: "nendyyusup79@gmail.com",
+          from: process.env.EMAIL,
           to: "yusup.junaedi97@gmail.com",
           subject: "OTP Reset Password",
           text: `Code OTP ${data.code}`,
